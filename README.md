@@ -29,44 +29,37 @@
 ```mermaid
 graph TD
     subgraph "Field (Nokia Devices)"
-        CLI_Old["Classic CLI Agents (7705/7210/SR 12.x)"]
-        CLI_New["MD-CLI Agents (7750 SR 20.x)"]
         Target_Devices["7210 SAS / 7705 SAR / 7750 SR"]
+        CLI_Old["Classic CLI (7705/7210/SR 12.x)"]
+        CLI_New["MD-CLI (7750 SR 20.x)"]
+        
+        Target_Devices --> CLI_Old
+        Target_Devices --> CLI_New
     end
 
-    subgraph "On-Premise Monitoring Layer (On-Prem)"
-        Controller["Controller Machine (CentOS 8)"]
-        Scraper["SSH Scraper Service (Python/Netmiko)"]
-        DataQueue[("NATS Message Queue")]
-        MetadataDB[("PostgreSQL DB")]
-        Alerts["Alert Handler"]
+    subgraph "Data Collection Layer"
+        Collector["Python Collector App\n(Netmiko / TextFSM)"]
     end
 
-    subgraph "Public Cloud Layer (AWS/GCP/Azure)"
-        Ingestion["Ingestion API / Load Balancer"]
-        Storage["S3 Object Storage (Time Series)"]
-        Query["Query API / Lambda"]
-        Visualization["Grafana / Superset"]
-        Alerts_Cloud["Cloud Alerting Service"]
+    subgraph "Data Storage Layer"
+        Telegraf["Telegraf\n(HTTP Listener v2)"]
+        InfluxDB[("InfluxDB v1.8\n(Time Series DB)")]
+    end
+
+    subgraph "Visualization & Alerting"
+        Grafana["Grafana\n(Dashboard & Monitoring)"]
+        External_Alerts["Alert System\n(Slack, Email, n8n)"]
     end
 
     %% 연결
-    Target_Devices --> CLI_Old
-    Target_Devices --> CLI_New
-
-    CLI_Old -->|Scrape Command| Controller
-    CLI_New -->|gNMI/NETCONF| Controller
-
-    Controller -->|Publish JSON| DataQueue
-    DataQueue -->|Persist Metadata| MetadataDB
-
-    Scraper -.->|Config/Templates| MetadataDB
-
-    Ingestion -->|Forward or Stream| Storage
-    Query -->|Fetch Logs| Storage
-    Visualization -->|Query| Query
-
-    Alerts -->|Push| Alerts_Cloud
+    CLI_Old -->|SSH Scrape| Collector
+    CLI_New -->|SSH Scrape| Collector
+    
+    Collector -->|HTTP Push (JSON)| Telegraf
+    Telegraf -->|Write Metrics| InfluxDB
+    
+    InfluxDB -->|Query| Grafana
+    Grafana -->|Trigger| External_Alerts
 ```
 
 ---

@@ -55,7 +55,7 @@ graph TD
     CLI_Old -->|SSH Scrape| Collector
     CLI_New -->|SSH Scrape| Collector
     
-    Collector -->|HTTP Push (JSON)| Telegraf
+    Collector -->|HTTP Push JSON| Telegraf
     Telegraf -->|Write Metrics| InfluxDB
     
     InfluxDB -->|Query| Grafana

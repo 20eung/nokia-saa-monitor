@@ -29,25 +29,25 @@
 ```mermaid
 graph TD
     subgraph "Field (Nokia Devices)"
-        CLI_Old[Classic CLI Agents (7705/7210/SR 12.x)]
-        CLI_New[MD-CLI Agents (7750 SR 20.x)]
-        Target_Devices[7210 SAS / 7705 SAR / 7750 SR]
+        CLI_Old["Classic CLI Agents (7705/7210/SR 12.x)"]
+        CLI_New["MD-CLI Agents (7750 SR 20.x)"]
+        Target_Devices["7210 SAS / 7705 SAR / 7750 SR"]
     end
 
     subgraph "On-Premise Monitoring Layer (On-Prem)"
-        Controller[Controller Machine (CentOS 8)]
-        Scraper[SSH Scraper Service (Python/Netmiko)]
-        DataQueue[(NATS Message Queue)]
-        MetadataDB[(PostgreSQL DB)]
-        Alerts[Alert Handler]
+        Controller["Controller Machine (CentOS 8)"]
+        Scraper["SSH Scraper Service (Python/Netmiko)"]
+        DataQueue[("NATS Message Queue")]
+        MetadataDB[("PostgreSQL DB")]
+        Alerts["Alert Handler"]
     end
 
     subgraph "Public Cloud Layer (AWS/GCP/Azure)"
-        Ingestion[Ingestion API / Load Balancer]
-        Storage[S3 Object Storage (Time Series)]
-        Query[Query API / Lambda]
-        Visualization[Grafana / Superset]
-        Alerts_Cloud[Cloud Alerting Service]
+        Ingestion["Ingestion API / Load Balancer"]
+        Storage["S3 Object Storage (Time Series)"]
+        Query["Query API / Lambda"]
+        Visualization["Grafana / Superset"]
+        Alerts_Cloud["Cloud Alerting Service"]
     end
 
     %% 연결

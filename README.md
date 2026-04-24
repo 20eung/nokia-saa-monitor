@@ -82,6 +82,27 @@ graph TD
     Grafana -->|Trigger| External_Alerts
 ```
 
+## 🏗 시스템 플로우
+
+```mermaid
+sequenceDiagram
+    participant N as Nokia Nodes (SROS)
+    participant P as Python Collector (App)
+    participant T as Telegraf (HTTP Listener)
+    participant I as InfluxDB v1.8
+    participant G as Grafana
+
+    Note over N: Epipe 서비스 구성 완료
+    P->>N: 1. SSH 접속 (Netmiko)
+    P->>N: 2. 'show saa test-results latest' 실행
+    N-->>P: 3. Raw Text 결과 반환
+    P->>P: 4. TextFSM/Regex 데이터 파싱 (JSON)
+    P->>T: 5. HTTP POST (JSON Data)
+    T->>I: 6. 데이터 저장 (Write)
+    G->>I: 7. Query (InfluxQL)
+    G-->>G: 8. 대시보드 시각화 및 알람
+```
+
 ## 🚀 시작하기 (Getting Started)
 
 ### 사전 요구 사항 (Prerequisites)
